@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Truck, Clock, ShieldCheck } from 'lucide-react';
 import { AddressInput } from './components/AddressInput';

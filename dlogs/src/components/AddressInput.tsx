@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MapPin } from 'lucide-react';
 import type { Location } from '../constants/types';
@@ -10,21 +10,35 @@ interface Props {
 
 export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
   const [value, setValue] = useState('');
+  const [addresses, setAddresses] = useState<Location[]>([]);
+  const [ignoreAddresses, setIgnoreAddresses] = useState(false);
 
-  const handleBlur = async () => {
-    if (value.length < 3) return;
-    try {
-      const res = await axios.get(`https://photon.komoot.io/api/?q=${value}&limit=1`);
-      if (res.data.features.length > 0) {
-        const f = res.data.features[0];
-        onSelect({
-          name: value,
-          lat: f.geometry.coordinates[1],
-          lng: f.geometry.coordinates[0]
-        });
+  useEffect(() => {
+    if(ignoreAddresses){
+      setIgnoreAddresses(false);
+    }
+    if (value.length < 3) {
+      setAddresses([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(`https://photon.komoot.io/api/?q=${value}&limit=5`);
+        if (ignoreAddresses === false && res.data.features.length > 0) {
+          setAddresses(res.data.features.map((feature: any) => ({
+            name: feature.properties.name || value,
+            lat: feature.geometry.coordinates[1],
+            lng: feature.geometry.coordinates[0]
+          })));
+        }
+      } catch (e) { 
+        console.error("Geocoding error", e); 
       }
-    } catch (e) { console.error("Geocoding error", e); }
-  };
+    }, 10);
+
+    return () => clearTimeout(timer);
+  }, [value]);
 
   return (
     <div className="flex flex-col gap-1 mb-4">
@@ -37,8 +51,23 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
         placeholder="Enter address..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        onBlur={handleBlur}
       />
+      <ul className="bg-white border rounded-xl mt-1 max-h-40 overflow-y-auto">
+        {addresses.map((addr, i) => (
+          <li 
+            key={i} 
+            className="p-2 cursor-pointer hover:bg-blue-100"
+            onClick={() => {
+              onSelect(addr);
+              setValue(addr.name);
+              setAddresses([]);
+              setIgnoreAddresses(true);
+            }}
+          >
+            {addr.name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
