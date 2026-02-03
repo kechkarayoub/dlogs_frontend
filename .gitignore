@@ -1,0 +1,46 @@
+# --- DEPENDENCIES ---
+node_modules/
+.pnp
+.pnp.js
+
+# --- TESTING ---
+coverage/
+
+# --- PRODUCTION / BUILD ---
+dist/
+build/
+out/
+
+# --- YARN ---
+# On ignore le cache Yarn mais on GARDE le lockfile
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+yarn-error.log
+
+# --- TYPESCRIPT ---
+*.tsbuildinfo
+next-env.d.ts
+
+# --- ENV / SENSITIVE DATA ---
+# TRÈS IMPORTANT : Ne jamais commit tes clés API
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# --- VS CODE ---
+.vscode/
+!.vscode/extensions.json
+.history/
+*.code-workspace
+
+# --- OPERATING SYSTEM ---
+.DS_Store
+Thumbs.db
