@@ -41,8 +41,8 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
   }, [value]);
 
   return (
-    <div className="flex flex-col gap-1 mb-4">
-      <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+    <div className="flex flex-col gap-1 mb-4" style={{padding: 10}}>
+      <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1" style={{marginRight: 10}}>
         <MapPin size={14}/> {label}
       </label>
       <input 
@@ -55,6 +55,7 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
       <ul className="bg-white border rounded-xl mt-1 max-h-40 overflow-y-auto">
         {addresses.map((addr, i) => (
           <li 
+            style={{padding: 2, marginBottom: 5, cursor: "pointer", color: "green", listStyle: "none"}}
             key={i} 
             className="p-2 cursor-pointer hover:bg-blue-100"
             onClick={() => {

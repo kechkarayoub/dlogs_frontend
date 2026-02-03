@@ -49,12 +49,12 @@ export default function App() {
         <AddressInput label="Pickup Point" onSelect={l => setRoute([route[0], l, route[2]])} />
         <AddressInput label="Drop-off Point" onSelect={l => setRoute([route[0], route[1], l])} />
 
-        <button onClick={handleCalculate} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-6 shadow-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+        <button onClick={handleCalculate} style={{borderRadius: 15, marginBottom: 10, background: "#29efe6"}} className="w-full  mb-6 bg-gradient-to-r  to-emerald-50 from-blue-600  shadow-md to-emerald-50 to-blue-700 text-white font-bold py-4 px-6 rounded-xl mt-6 shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 transform">
           <Clock size={20}/> RUN COMPLIANCE
         </button>
 
         {tripData && (
-          <div className="mt-8 p-4 bg-green-50 rounded-xl border border-green-200">
+          <div className="mt-8 mb-6 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-200 shadow-md">
             <div className="flex items-center gap-2 text-green-700 font-bold mb-1">
               <ShieldCheck size={18}/> HOS COMPLIANT
             </div>
