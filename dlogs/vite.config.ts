@@ -12,7 +12,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-leaflet', 'leaflet', 'lucide-react', 'axios'],
+    include: ['react', 'react-dom', 'react-leaflet', 'leaflet', 'lucide-react', 'axios', 'pigeon-maps'],
+    exclude: ['pigeon-overlay', 'inferno', 'inferno-component'],
     force: true,
   },
 })

@@ -1,6 +1,5 @@
 import { Map, Marker, } from 'pigeon-maps';
 import type { Location } from '../constants/types';
-import { Children } from 'react';
 
 interface Props {
   center: [number, number];

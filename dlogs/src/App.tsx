@@ -7,13 +7,14 @@ import { TripMap } from './components/TripMap';
 import type { Location, LogSegment } from './constants/types';
 
 interface TripData {
-  steps_info: LogSegment[];
+  steps: LogSegment[];
 }
 
 export default function App() {
   const [route, setRoute] = useState<(Location | null)[]>([null, null, null]);
   const [tripData, setTripData] = useState<TripData | null>(null);
   const [userPos, setUserPos] = useState<[number, number]>([37.09, -95.71]);
+  const [cycle_used, setCycleUsed] = useState<number>(0);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(p => setUserPos([p.coords.latitude, p.coords.longitude]));
@@ -21,16 +22,21 @@ export default function App() {
 
   const handleCalculate = async () => {
     if (route.some(r => !r)) return alert("Please fill all locations");
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/plan-route/`, {
-      start: [route[0]!.lng, route[0]!.lat],
-      pickup: [route[1]!.lng, route[1]!.lat],
-      dropoff: [route[2]!.lng, route[2]!.lat],
-      cycle_used: 0
-    });
-    setTripData(res.data);
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/logs/`, {
+        start: [route[0]!.lat, route[0]!.lng],
+        pickup: [route[1]!.lat, route[1]!.lng],
+        dropoff: [route[2]!.lat, route[2]!.lng],
+        cycle_used: cycle_used
+      });
+      setTripData(res.data);
+    } catch (error) {
+      console.error("Calculation error:", error);
+      alert("Error calculating compliance. Check console for details.");
+    }
   };
 
-  const groupedLogs = tripData ? tripData.steps_info.reduce((acc: Record<number, LogSegment[]>, curr: LogSegment) => {
+  const groupedLogs = tripData ? tripData.steps.reduce((acc: Record<number, LogSegment[]>, curr: LogSegment) => {
     if (!acc[curr.day_number]) acc[curr.day_number] = [];
     acc[curr.day_number].push(curr);
     return acc;
@@ -42,14 +48,24 @@ export default function App() {
       <aside className="w-[380px] bg-white p-8 shadow-xl z-10 overflow-y-auto">
         <div className="flex items-center gap-2 mb-10">
           <Truck className="text-blue-600" size={32} />
-          <h1 className="text-2xl font-black text-gray-800">SPOTTER <span className="text-blue-600">AI</span></h1>
+          <h1 className="text-2xl font-black text-gray-800">DLOGS</h1>
         </div>
 
-        <AddressInput label="Current Location" onSelect={l => setRoute([l, route[1], route[2]])} />
-        <AddressInput label="Pickup Point" onSelect={l => setRoute([route[0], l, route[2]])} />
-        <AddressInput label="Drop-off Point" onSelect={l => setRoute([route[0], route[1], l])} />
+        <div className="mb-6 text-gray-600">
+          <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1 mb-2"  style={{marginRight: 10}}>
+            HOS Cycle Used
+          </label>
+          <input type="number" value={cycle_used} onChange={e => setCycleUsed(Number(e.target.value))} />
+        </div>
 
-        <button onClick={handleCalculate} style={{borderRadius: 15, marginBottom: 10, background: "#29efe6"}} className="w-full  mb-6 bg-gradient-to-r  to-emerald-50 from-blue-600  shadow-md to-emerald-50 to-blue-700 text-white font-bold py-4 px-6 rounded-xl mt-6 shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center justify-center gap-2 active:scale-95 transform">
+        <AddressInput label="Current Location" onSelect={l => setRoute(curr => [l, curr[1], curr[2]])} />
+        <AddressInput label="Pickup Point" onSelect={l => setRoute(curr => [curr[0], l, curr[2]])} />
+        <AddressInput label="Drop-off Point" onSelect={l => setRoute(curr => [curr[0], curr[1], l])} />
+
+        <button 
+          onClick={handleCalculate} 
+          className="w-full mb-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
           <Clock size={20}/> RUN COMPLIANCE
         </button>
 
@@ -58,7 +74,6 @@ export default function App() {
             <div className="flex items-center gap-2 text-green-700 font-bold mb-1">
               <ShieldCheck size={18}/> HOS COMPLIANT
             </div>
-            <p className="text-xs text-green-600">Route analyzed for FMCSA 70h/8days rules.</p>
           </div>
         )}
       </aside>
@@ -69,7 +84,7 @@ export default function App() {
 
         {tripData && (
           <div className="flex flex-col items-center">
-            <h2 className="text-2xl font-black text-gray-800 mb-8 self-start uppercase tracking-widest">Compliance Logs</h2>
+            <h2 className="text-2xl font-black text-gray-800 mb-8 self-start uppercase tracking-widest">Logs</h2>
             {Object.entries(groupedLogs).map(([day, segments]) => {
               const dayOffset = parseInt(day) - 1;
               const logDate = new Date();
@@ -80,6 +95,10 @@ export default function App() {
                 date={formattedDate}
                 driverName="Driver name"
                 carrierName="Company name"
+                startCityName={route[0]?.name || ""}
+                pickUpCityName={route[1]?.name || ""}
+                dropOffCityName={route[2]?.name || ""}
+                numberOfDays={Object.keys(groupedLogs).length}
               />
             })}
           </div>

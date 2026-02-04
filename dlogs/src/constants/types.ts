@@ -11,11 +11,12 @@ export interface LogSegment {
   end_hour: number;
   label: string;
   day_number: number;
+  miles_moved: number;
 }
 
 export const STATUS_Y: Record<string, number> = {
-  OFF_DUTY: 34,
-  SLEEPER: 61,
-  DRIVING: 88,
-  ON_DUTY: 115
+  OFF_DUTY: 196,
+  SLEEPER: 215,
+  DRIVING: 230,
+  ON_DUTY: 245
 };

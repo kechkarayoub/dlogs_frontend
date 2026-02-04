@@ -3,6 +3,15 @@ import axios from 'axios';
 import { MapPin } from 'lucide-react';
 import type { Location } from '../constants/types';
 
+interface PhotonFeature {
+  properties: {
+    name?: string;
+  };
+  geometry: {
+    coordinates: [number, number];
+  };
+}
+
 interface Props {
   label: string;
   onSelect: (loc: Location) => void;
@@ -10,23 +19,19 @@ interface Props {
 
 export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
   const [value, setValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
   const [addresses, setAddresses] = useState<Location[]>([]);
-  const [ignoreAddresses, setIgnoreAddresses] = useState(false);
 
   useEffect(() => {
-    if(ignoreAddresses){
-      setIgnoreAddresses(false);
-    }
-    if (value.length < 3) {
-      setAddresses([]);
+    if(value.length < 3 || value === selectedValue) {
       return;
     }
 
     const timer = setTimeout(async () => {
       try {
         const res = await axios.get(`https://photon.komoot.io/api/?q=${value}&limit=5`);
-        if (ignoreAddresses === false && res.data.features.length > 0) {
-          setAddresses(res.data.features.map((feature: any) => ({
+        if (res.data.features.length > 0) {
+          setAddresses(res.data.features.map((feature: PhotonFeature) => ({
             name: feature.properties.name || value,
             lat: feature.geometry.coordinates[1],
             lng: feature.geometry.coordinates[0]
@@ -50,7 +55,13 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
         className="p-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
         placeholder="Enter address..."
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          const val = e.target.value;
+          setValue(val);
+          if (val.length < 3) {
+            setAddresses([]);
+          }
+        }}
       />
       <ul className="bg-white border rounded-xl mt-1 max-h-40 overflow-y-auto">
         {addresses.map((addr, i) => (
@@ -59,10 +70,10 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
             key={i} 
             className="p-2 cursor-pointer hover:bg-blue-100"
             onClick={() => {
-              onSelect(addr);
+              setSelectedValue(addr.name);
               setValue(addr.name);
+              onSelect(addr);
               setAddresses([]);
-              setIgnoreAddresses(true);
             }}
           >
             {addr.name}
