@@ -6,7 +6,7 @@ interface Props {
   segments: LogSegment[];
   day: number;
   date: string;
-  driverName: string;
+  driverName?: string;
   carrierName: string;
   startCityName?: string;
   pickUpCityName?: string;
@@ -14,7 +14,7 @@ interface Props {
   numberOfDays?: number;
 }
 
-export const ELDLogSheet: React.FC<Props> = ({ segments, day, date, driverName, carrierName, startCityName, pickUpCityName, dropOffCityName, numberOfDays }) => {
+export const ELDLogSheet: React.FC<Props> = ({ segments, day, date, carrierName, startCityName, pickUpCityName, dropOffCityName, numberOfDays }) => {
   const chartWidth = 760;
   const hourWidth = (chartWidth - 150) / 24;
 
