@@ -14,7 +14,7 @@ interface Props {
   numberOfDays?: number;
 }
 
-export const ELDLogSheet: React.FC<Props> = ({ segments, day, date, carrierName, startCityName, pickUpCityName, dropOffCityName, numberOfDays }) => {
+export const LogSheet: React.FC<Props> = ({ segments, day, date, carrierName, startCityName, pickUpCityName, dropOffCityName, numberOfDays }) => {
   const chartWidth = 760;
   const hourWidth = (chartWidth - 150) / 24;
 
@@ -29,7 +29,7 @@ export const ELDLogSheet: React.FC<Props> = ({ segments, day, date, carrierName,
   const date_splited = date.split('-');
 
   return (
-    <div className="bg-white p-6 shadow-2xl rounded-xl border border-gray-300 mb-12 w-[850px] mx-auto">
+    <div style={{marginTop: 25}} className="LogSheet bg-white p-6 shadow-2xl rounded-xl border border-gray-300 mb-12 w-[850px] mx-auto">
       <div className="top-[45px] left-[60px] font-mono text-sm text-blue-800 font-bold uppercase">
           {`Day log: ${date}. ${startCityName ? "Start from: " + startCityName : ""}${pickUpCityName ? ", Pickup from: " + pickUpCityName : ""}${dropOffCityName ? ", Drop off at: " + dropOffCityName : ""}${" (" + day + " of " + (numberOfDays || "?") + " days)"}`}
         </div>

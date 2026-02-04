@@ -62,11 +62,37 @@ button:focus-visible {
   position: relative;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Print styles for proper page breaks */
+@media print {
+  /* Hide UI elements during print */
+  aside, button, input, label {
+    display: none !important;
   }
+  
+  body {
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+  
+  main {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Ensure each LogSheet starts on a new page if it doesn't fit */
+  div[class*="LogSheet"],
+  .flex.flex-col {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Add page break after each LogSheet */
+  div > div:nth-child(n+2) {
+    page-break-before: auto;
+  }
+
   a:hover {
     color: #747bff;
   }
