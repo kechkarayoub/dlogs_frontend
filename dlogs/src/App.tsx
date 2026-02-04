@@ -44,43 +44,77 @@ export default function App() {
   }, {}) : {};
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Sidebar de contrôle */}
-      <aside style={printing ? { display: 'none' } : {}} className="w-[380px] bg-white p-8 shadow-xl z-10 overflow-y-auto">
-        <div className="flex items-center gap-2 mb-10">
-          <Truck className="text-blue-600" size={32} />
-          <h1 className="text-2xl font-black text-gray-800">DLOGS</h1>
+      <aside style={printing ? { display: 'none' } : {}} className="w-[380px] bg-white shadow-2xl z-10 overflow-y-auto border-r border-gray-200">
+        <div className="sticky top-0 bg-white p-8 border-b border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg">
+              <Truck className="text-white" size={28} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-gray-800">DLOGS</h1>
+              <p className="text-xs text-gray-500">Driver Logs Manager</p>
+            </div>
+          </div>
         </div>
 
-        <div className="mb-6 text-gray-600">
-          <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1 mb-2"  style={{marginRight: 10}}>
-            HOS Cycle Used
-          </label>
-          <input type="number" value={cycle_used} onChange={e => setCycleUsed(Number(e.target.value))} />
+        <div className="p-8 space-y-6">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100" style={{padding: 10}}>
+            <label className="text-xs font-bold text-blue-700 uppercase block mb-3" style={{width: 200, display: 'inline-block'}}>
+              📊 HOS Cycle Used
+            </label>
+            <input 
+              type="number" 
+              value={cycle_used} 
+              onChange={e => setCycleUsed(Number(e.target.value))}
+              className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-800 font-semibold"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <AddressInput label="📍 Current Location" onSelect={l => setRoute(curr => [l, curr[1], curr[2]])} />
+            <AddressInput label="📦 Pickup Point" onSelect={l => setRoute(curr => [curr[0], l, curr[2]])} />
+            <AddressInput label="🎯 Drop-off Point" onSelect={l => setRoute(curr => [curr[0], curr[1], l])} />
+          </div>
+
+          <button 
+            onClick={handleCalculate} style={{marginTop: 10, marginBottom: 20, background: "#007bff"}}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <Clock size={20}/> RUN COMPLIANCE
+          </button>
+
+          {tripData && (
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200 shadow-md">
+              <div className="flex items-center gap-2 text-green-700 font-bold">
+                <ShieldCheck size={20}/> HOS COMPLIANT
+              </div>
+              <p className="text-xs text-green-600 mt-2">Route analyzed for FMCSA 70h/8days rules.</p>
+            </div>
+          )}
         </div>
-
-        <AddressInput label="Current Location" onSelect={l => setRoute(curr => [l, curr[1], curr[2]])} />
-        <AddressInput label="Pickup Point" onSelect={l => setRoute(curr => [curr[0], l, curr[2]])} />
-        <AddressInput label="Drop-off Point" onSelect={l => setRoute(curr => [curr[0], curr[1], l])} />
-
-        <button 
-          onClick={handleCalculate} style={{marginBottom: 20}}
-          className="w-full mb-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-        >
-          <Clock size={20}/> RUN COMPLIANCE
-        </button>
-
       </aside>
 
       {/* Zone de visualisation */}
-      <main className="flex-1 overflow-y-auto p-12">
-        <div  style={printing ? { display: 'none' } : {}}>
-          <TripMap center={userPos} locations={route} />
-        </div>
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-8 space-y-8">
+          <div style={printing ? { display: 'none' } : {}}>
+            <div className="mb-6">
+              <h2 className="text-3xl font-black text-gray-800 mb-2">Route Map</h2>
+              <p className="text-sm text-gray-500">View your planned route and waypoints</p>
+            </div>
+            <TripMap center={userPos} locations={route} />
+          </div>
 
-        {tripData && (
-          <div className="flex flex-col items-center">
-            <h2 className="text-2xl font-black text-gray-800 mb-8 self-start uppercase tracking-widest">Logs</h2>
+          {tripData && (
+            <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+              <div className="mb-8">
+                <h2 className="text-3xl font-black text-gray-800 mb-2">📋 Compliance Logs</h2>
+                <p className="text-sm text-gray-500">Daily HOS compliance breakdown</p>
+              </div>
+              
+              <div className="space-y-8">
             {Object.entries(groupedLogs).map(([day, segments]) => {
               const dayOffset = parseInt(day) - 1;
               const logDate = new Date();
@@ -97,20 +131,23 @@ export default function App() {
                 numberOfDays={Object.keys(groupedLogs).length}
               />
             })}
-            <button  style={printing ? { display: 'none' } : {marginBottom: 20, marginTop: 20}} 
-              onClick={() => {
-                setPrinting(true);
-                setTimeout(() => {
-                  window.print();
-                  setPrinting(false);
-                }, 500);
-              }}
-              className="mt-8 px-8 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 active:scale-95 print:hidden"
-            >
-              🖨️ Print All Logs
-            </button>
-          </div>
-        )}
+              
+              <button  style={printing ? { display: 'none' } : {marginTop: 20, marginBottom: 50, background: "#00f3ff"}} 
+                onClick={() => {
+                  setPrinting(true);
+                  setTimeout(() => {
+                    window.print();
+                    setPrinting(false);
+                  }, 500);
+                }}
+                className="w-full mt-8 px-8 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+              >
+                🖨️ Print All Logs
+              </button>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

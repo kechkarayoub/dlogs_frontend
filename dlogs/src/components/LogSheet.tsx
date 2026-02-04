@@ -29,13 +29,13 @@ export const LogSheet: React.FC<Props> = ({ segments, day, date, carrierName, st
   const date_splited = date.split('-');
 
   return (
-    <div style={{marginTop: 25}} className="LogSheet bg-white p-6 shadow-2xl rounded-xl border border-gray-300 mb-12 w-[850px] mx-auto">
+    <div style={{marginTop: 25, paddingBottom: 50}} className="LogSheet bg-white p-6 shadow-2xl rounded-xl border border-gray-300 mb-12 w-[850px] mx-auto">
       <div className="top-[45px] left-[60px] font-mono text-sm text-blue-800 font-bold uppercase">
           {`Day log: ${date}. ${startCityName ? "Start from: " + startCityName : ""}${pickUpCityName ? ", Pickup from: " + pickUpCityName : ""}${dropOffCityName ? ", Drop off at: " + dropOffCityName : ""}${" (" + day + " of " + (numberOfDays || "?") + " days)"}`}
         </div>
       <div className="relative border-2 border-black" style={{ width: '800px', height: '500px' }}>
         {/* L'image de fond fournie */}
-        <img src="/blank-paper-log.png" className="absolute inset-0 w-full h-full object-fill" alt="Log Sheet" style={{width: "100%", height: "100%"}}/>
+        <img src="/blank-paper-log.png" className="absolute inset-0 w-full h-full object-fill" alt="Log Sheet" style={{width: "100%", height: "100%", marginBottom: 25}}/>
         
         <div style={{top: 5, left: 406, color: "red", lineHeight: 1, fontSize: "12px", fontWeight: "bold"}} className="absolute top-[45px] left-[60px] font-mono text-sm text-blue-800 font-bold uppercase">
           {date_splited[0]}

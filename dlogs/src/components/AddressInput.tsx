@@ -47,7 +47,7 @@ export const AddressInput: React.FC<Props> = ({ label, onSelect }) => {
 
   return (
     <div className="flex flex-col gap-1 mb-4" style={{padding: 10}}>
-      <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1" style={{marginRight: 10}}>
+      <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1" style={{width: 200, display: 'inline-block'}}>
         <MapPin size={14}/> {label}
       </label>
       <input 
